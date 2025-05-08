@@ -1,38 +1,61 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Dropdown } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ThemeContext } from "../../../context/ThemeContext";
 
 const Hubspot = () => {
-  // Just use the ThemeContext but don't force a theme change
   const { background } = useContext(ThemeContext);
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sortControl, setSortControl] = useState("Newest");
+  const [paging, setPaging] = useState(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
+  const fetchCompanies = async (after = null) => {
+    try {
+      const url = after
+        ? `http://localhost:5000/api/companies/next?after=${after}`
+        : "http://localhost:5000/api/companies";
+
+      const response = await axios.get(url);
+      setCompanies(response.data.results || []);
+      setPaging(response.data.paging);
+    } catch (error) {
+      console.error("Failed to fetch companies:", error);
+    } finally {
+      setLoading(false);
+      setIsLoadingMore(false);
+    }
+  };
+
   useEffect(() => {
-    // Remove the theme override to respect user's theme selection
-    // changeBackground({ value: "light", label: "Light" });
-
-    const fetchCompanies = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/companies");
-        const topCompanies = response.data.results || [];
-        setCompanies(topCompanies);
-      } catch (error) {
-        console.error("Failed to fetch companies:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCompanies();
-  }, []); // Remove the changeBackground dependency
+  }, []);
 
   const handleCompanyClick = (id) => {
     navigate(`/dashboard/${id}`);
+  };
+
+  const loadNextPage = async () => {
+    if (!paging?.next) return;
+
+    setIsLoadingMore(true);
+    setCurrentPage((prev) => prev + 1);
+    await fetchCompanies(paging.next.after);
+  };
+
+  const loadPreviousPage = async () => {
+    if (currentPage <= 1) return;
+
+    setIsLoadingMore(true);
+    setCurrentPage((prev) => prev - 1);
+    // Note: You'll need to implement a way to get the previous page cursor
+    // This is a simplified version - you might need to track page history
+    // or modify your backend to support previous pages
+    alert(
+      "Previous page implementation would require additional backend support"
+    );
   };
 
   if (loading) {
@@ -44,7 +67,6 @@ const Hubspot = () => {
       </div>
     );
   }
-  console.log(companies);
 
   return (
     <>
@@ -52,7 +74,9 @@ const Hubspot = () => {
         <div className="col-xl-12">
           <div className="card">
             <div className="card-header pb-0 border-0 flex-wrap">
-              <h4 className="fs-20 mb-3">HubSpot Companies</h4>
+              <h4 className="fs-20 mb-3">
+                HubSpot Companies (Page {currentPage})
+              </h4>
               <div className="d-flex"></div>
             </div>
             <div className="card-body">
@@ -110,6 +134,38 @@ const Hubspot = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+        {/* <button
+          onClick={loadPreviousPage}
+          disabled={currentPage <= 1 || isLoadingMore}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: currentPage <= 1 ? "#ccc" : "dodgerblue",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: currentPage <= 1 ? "not-allowed" : "pointer",
+          }}
+        >
+          Previous Page
+        </button> */}
+
+        <button
+          onClick={loadNextPage}
+          disabled={!paging?.next || isLoadingMore}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: !paging?.next ? "#ccc" : "dodgerblue",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: !paging?.next ? "not-allowed" : "pointer",
+          }}
+        >
+          {isLoadingMore ? "Loading..." : "Next Page"}
+        </button>
       </div>
     </>
   );

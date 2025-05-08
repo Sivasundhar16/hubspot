@@ -3,7 +3,7 @@ import axios from "axios";
 export const getallCompany = async (req, res) => {
   try {
     const response = await axios.get(
-      "https://api.hubapi.com/crm/v3/objects/companies",
+      "https://api.hubapi.com/crm/v3/objects/companies?limit=12",
       {
         headers: {
           Authorization: `Bearer ${process.env.token}`,
@@ -89,5 +89,31 @@ export const addCompany = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const nextPage = async (req, res) => {
+  try {
+    const { after, limit = 12 } = req.query;
+    console.log("🚀 ~ nextPage ~ limit:", limit);
+
+    if (!after) {
+      return res
+        .status(400)
+        .json({ message: "Pagination cursor ('after' parameter) is required" });
+    }
+
+    const apiUrl = `https://api.hubapi.com/crm/v3/objects/companies?limit=${limit}&after=${after}`;
+
+    const response = await axios.get(apiUrl, {
+      headers: {
+        Authorization: `Bearer ${process.env.token}`,
+      },
+    });
+
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error("Error fetching next page:", error);
+    res.status(500).status({ message: "Internal server Error" });
   }
 };
