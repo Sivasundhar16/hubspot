@@ -1,450 +1,846 @@
-import React,{useState} from 'react';
-import {Link} from 'react-router-dom';
-import {Modal} from 'react-bootstrap';
-import {nanoid} from 'nanoid';
-import swal from "sweetalert";
-
-const TableContent = [
-	{ id:1, position:'Network Engineer', type:'Full-Time',pdate:'12-01-2021', ldate:'24-01-2021', cdate:'25-01-2021',status:'Active'},
-	{ id:2, position:'Entry Level Software Developer', type:'Full-Time',pdate:'12-01-2021', ldate:'24-01-2021',cdate:'25-01-2021',status:'InActive'},
-	{ id:3, position:'Java Developer', type:'Full-Time',pdate:'12-01-2021', ldate:'24-01-2021', cdate:'25-01-2021',status:'Active'},
-	{ id:4, position:'IOS Developer', 	type:'Full-Time',pdate:'12-01-2021', ldate:'24-01-2021', cdate:'25-01-2021',status:'InActive'},
-	{ id:5, position:'Junior Web Developer', type:'Full-Time',pdate:'12-01-2021', ldate:'24-01-2021', cdate:'25-01-2021',status:'Active'},
-	{ id:6, position:'SQL Developer', 	type:'Full-Time',pdate:'12-01-2021', ldate:'24-01-2021', cdate:'25-01-2021',status:'InActive'},
-	{ id:7, position:'Junior Developer', type:'Full-Time',pdate:'12-01-2021', ldate:'24-01-2021', cdate:'25-01-2021',status:'Active'},
-];
-
-
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const JobLists = () => {
-	
-	//Modal box
-	const [addCard, setAddCard] = useState(false);
-	
-	const [contacts, setContacts] = useState(TableContent);
-	
-	// delete data  
-    const handleDeleteClick = (contactId) => {
-        const newContacts = [...contacts];    
-        const index = contacts.findIndex((contact)=> contact.id === contactId);
-        newContacts.splice(index, 1);
-        setContacts(newContacts);
+  const navigate = useNavigate();
+  const [userdata, setUserData] = useState({
+    // Basic Information
+    ATTN: "",
+    transferedFrom: "",
+    transferedTo: "",
+    type: "",
+    parentCompany: "",
+    companyDisplayName: "",
+    companyName: "",
+
+    // Billing Information
+    billingCompanyName: "",
+    billingContact: "",
+    billingPhone: "",
+    billingAddress: "",
+    billingCity: "",
+    billingState: "",
+    billingZipCode: "",
+
+    // Ownership and Market
+    ownership: "own",
+    market: "market facing",
+    industry: "",
+
+    // Shipping Information
+    shippingAddress: "",
+    shippingAddress2: "",
+    shippingCity: "",
+    shippingState: "",
+    shippingZipCode: "",
+    shippingCountry: "",
+    longitude: "",
+
+    // Primary Contact
+    primaryFirstName: "",
+    primaryLastName: "",
+    primaryTitle: "",
+    primaryEmail: "",
+    primaryPhone: "",
+
+    // Secondary Contact
+    secondaryFirstName: "",
+    secondaryLastName: "",
+    secondaryTitle: "",
+    secondaryEmail: "",
+    secondaryPhone: "",
+
+    // Other Contacts
+    otherPOC: "",
+    broker: "",
+
+    // DOM Specific
+    domeID: "",
+    audio: "",
+    hardwareScreen: "",
+    board: "",
+    extras: "",
+    installDate: "",
+
+    // Training and Notes
+    onboardingTraining: "",
+    accountOverview: "",
+    strategyAndAccount: "",
+    technicalServicingNotes: "",
+
+    // Online Presence
+    website: "",
+    instagram: "",
+    instaFollowing: "",
+    tikTok: "",
+    otherSocial: "",
+    check: false,
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setUserData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/company/add",
+        userdata
+      );
+
+      if (response.status === 201) {
+        localStorage.setItem("available", "true");
+        setUserData({
+          ATTN: "",
+          transferedFrom: "",
+          transferedTo: "",
+          type: "",
+          parentCompany: "",
+          companyDisplayName: "",
+          companyName: "",
+          billingCompanyName: "",
+          billingContact: "",
+          billingPhone: "",
+          billingAddress: "",
+          billingCity: "",
+          billingState: "",
+          billingZipCode: "",
+          ownership: "own",
+          market: "market facing",
+          industry: "",
+          shippingAddress: "",
+          shippingAddress2: "",
+          shippingCity: "",
+          shippingState: "",
+          shippingZipCode: "",
+          shippingCountry: "",
+          longitude: "",
+          primaryFirstName: "",
+          primaryLastName: "",
+          primaryTitle: "",
+          primaryEmail: "",
+          primaryPhone: "",
+          secondaryFirstName: "",
+          secondaryLastName: "",
+          secondaryTitle: "",
+          secondaryEmail: "",
+          secondaryPhone: "",
+          otherPOC: "",
+          broker: "",
+          domeID: "",
+          audio: "",
+          hardwareScreen: "",
+          board: "",
+          extras: "",
+          installDate: "",
+          onboardingTraining: "",
+          accountOverview: "",
+          strategyAndAccount: "",
+          technicalServicingNotes: "",
+          website: "",
+          instagram: "",
+          instaFollowing: "",
+          tikTok: "",
+          otherSocial: "",
+          check: false,
+        });
+        navigate("/domhost");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      setError(
+        error.response?.data?.message ||
+          "Registration failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
-	
-	//Add data 
-    const [addFormData, setAddFormData ] = useState({
-        position:'',
-        type:'',
-		pdate:'',
-		ldate:'',
-		cdate:'',
-		status:'',
-    }); 
-    
-    // Add contact function
-    const handleAddFormChange = (event) => {
-        event.preventDefault();    
-        const fieldName = event.target.getAttribute('name');
-        const fieldValue = event.target.value;
-        const newFormData = {...addFormData};
-        newFormData[fieldName] = fieldValue;
-        setAddFormData(newFormData);
-    };
-    
-     //Add Submit data
-    const handleAddFormSubmit = (event)=> {
-        event.preventDefault();
-        var error = false;
-		var errorMsg = '';
-        if(addFormData.position === ""){
-            error = true;
-			errorMsg = 'Please fill position';
-        }else if(addFormData.type === ""){
-            error = true;
-			errorMsg = 'Please fill type';
-        }
-        else if(addFormData.pdate === ""){
-            error = true;
-			errorMsg = 'Please fill position date';
-        } 
-		else if(addFormData.ldate === ""){
-            error = true;
-			errorMsg = 'Please fill Last date';
-        }
-		else if(addFormData.status === ""){
-            error = true;
-			errorMsg = 'Please write status';
-        }
-        if(!error){
-            const newContact = {
-                id: nanoid(),
-                position: addFormData.position,
-                type:  addFormData.type,
-				pdate: addFormData.pdate,
-				ldate: addFormData.ldate,
-				cdate: addFormData.cdate,
-				status: addFormData.status,
-			};
-            const newContacts = [...contacts, newContact];
-            setContacts(newContacts);
-            setAddCard(false);
-            swal('Good job!', 'Successfully Added', "success");
-            addFormData.position  = addFormData.type = addFormData.pdate = addFormData.ldate = addFormData.cdate = addFormData.status = '';         
-            
-        }else{
-			swal('Oops', errorMsg, "error");
-		}
-    };
-	
-	//Edit start 
-	const [editModal, setEditModal] = useState(false);	
-	// Edit function editable page loop
-    const [editContactId, setEditContactId] = useState(null);
-   
-    // Edit function button click to edit
-    const handleEditClick = ( event, contact) => {
-        event.preventDefault();
-        setEditContactId(contact.id);
-        const formValues = {
-            position: contact.position,
-            type: contact.type,  
-            pdate: contact.pdate,  
-            ldate: contact.ldate,  
-            cdate: contact.cdate,  
-            status: contact.status,  
-        }
-        setEditFormData(formValues);
-        setEditModal(true);
-    };
-    
-    
-    // edit  data  
-    const [editFormData, setEditFormData] = useState({
-        position:'',
-        type:'',
-		pdate:'',
-		ldate:'',
-		cdate:'',
-		status:'',
-    })
-    
-    //update data function
-    const handleEditFormChange = (event) => {
-        event.preventDefault();   
-        const fieldName = event.target.getAttribute('name');
-        const fieldValue = event.target.value;
-        const newFormData = {...editFormData};
-        newFormData[fieldName] = fieldValue;
-        setEditFormData(newFormData);
-    };
-    
-    // edit form data submit
-    const handleEditFormSubmit = (event) => {
-        event.preventDefault();
-        const editedContact = {
-            id: editContactId,	
-			position: editFormData.position,
-            type: 	editFormData.type,  
-            pdate: 	editFormData.pdate,  
-            ldate: 	editFormData.ldate,  
-            cdate: 	editFormData.cdate,  
-            status: editFormData.status,
-        }
-        const newContacts = [...contacts];
-        const index = contacts.findIndex((contact)=> contact.id === editContactId);
-        newContacts[index] = editedContact;
-        setContacts(newContacts);
-        setEditContactId(null);
-        setEditModal(false);
-        
-    }
-	return(
-		<>
-			<div className="d-flex align-items-center mb-4 flex-wrap">
-				<h4 className="fs-20 font-w600  me-auto">Job List</h4>
-				<div>
-					<Link to={"#"} className="btn btn-primary me-3 btn-sm" onClick={()=> setAddCard(true)}>
-						<i className="fas fa-plus me-2"></i>Add New Job
-					</Link>
-					<Modal className="modal fade"  show={addCard} onHide={setAddCard} >
-						<div role="document">
-							<div className="">
-								<form >
-									<div className="modal-header">
-										<h4 className="modal-title fs-20">Add Contact</h4>
-										<button type="button" className="btn-close" onClick={()=> setAddCard(false)} data-dismiss="modal"><span></span></button>
-									</div>
-									<div className="modal-body">
-										<i className="flaticon-cancel-12 close" data-dismiss="modal"></i>
-										<div className="add-contact-box">
-											<div className="add-contact-content">
-												<div className="form-group mb-3">
-													<label className="text-black font-w500">Position</label>
-													<div className="contact-name">
-														<input type="text"  className="form-control"  autocomplete="off"
-															name="position" required="required"
-															onChange={handleAddFormChange}
-															placeholder="position"
-														/>
-														<span className="validation-text"></span>
-													</div>
-												</div>
-												<div className="form-group mb-3">
-													<label className="text-black font-w500">Type</label>
-													<div className="contact-name">
-														<input type="text"  className="form-control"  autocomplete="off"
-															name="type" required="required"
-															onChange={handleAddFormChange}
-															placeholder="type"
-														/>
-														<span className="validation-text"></span>
-													</div>
-												</div>
-												<div className="form-group mb-3">
-													<label className="text-black font-w500">Posted Date</label>
-													<div className="contact-name">
-														<input type="text"  className="form-control"  autocomplete="off"
-															name="pdate" required="required"
-															onChange={handleAddFormChange}
-															placeholder="pdate"
-														/>
-														<span className="validation-text"></span>
-													</div>
-												</div>
-												<div className="form-group mb-3">
-													<label className="text-black font-w500">Last Date</label>
-													<div className="contact-name">
-														<input type="text"  className="form-control" autocomplete="off"
-															name="ldate" required="required"
-															onChange={handleAddFormChange}
-															placeholder="ldate"
-														/>
-														<span className="validation-text"></span>
-													</div>
-												</div>
-												<div className="form-group mb-3">
-													<label className="text-black font-w500">Close Date</label>
-													<div className="contact-name">
-														<input type="text"  className="form-control"  autocomplete="off"
-															name="cdate" required="required"
-															onChange={handleAddFormChange}
-															placeholder="cdate"
-														/>
-														<span className="validation-text"></span>
-													</div>
-												</div>											
-												<div className="form-group mb-3">
-													<label className="text-black font-w500">Status</label>
-													<div className="contact-name">
-														<input type="text"  className="form-control" autocomplete="off"
-															name="status" required="required"
-															onChange={handleAddFormChange}
-															placeholder="status"
-														/>
-														<span className="validation-text"></span>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div className="modal-footer">
-										<button type="submit" className="btn btn-success" onClick={handleAddFormSubmit}>Add</button>   
-										<button type="button" onClick={()=> setAddCard(false)} className="btn btn-danger"> <i className="flaticon-delete-1"></i> Discard</button>      
-									</div>
-								</form>
-								
-							</div>
-						</div>
-					</Modal>
-					<Modal className="modal fade"  show={editModal} onHide={setEditModal} >
-						<div  role="document">
-							<div>
-								<form >
-									<div className="modal-header">
-										<h4 className="modal-title fs-20">Add Contact</h4>
-										<button type="button" className="btn-close" onClick={()=> setEditModal(false)} data-dismiss="modal"><span></span></button>
-									</div>
-									<div className="modal-body">
-										<i className="flaticon-cancel-12 close" data-dismiss="modal"></i>
-										<div className="add-contact-box">
-											<div className="add-contact-content">
-											  <div className="form-group mb-3">
-													<label className="text-black font-w500">Position</label>
-													<div className="contact-name">
-														<input type="text"  className="form-control"  autocomplete="off"
-															name="position" required="required"
-															value={editFormData.position}
-															onChange={handleEditFormChange}
-															placeholder="position"
-														/>
-														<span className="validation-text"></span>
-													</div>
-												</div>
-												<div className="form-group mb-3">
-													<label className="text-black font-w500">Type</label>
-													<div className="contact-name">
-														<input type="text"  className="form-control"  autocomplete="off"
-															name="type" required="required"
-															value={editFormData.type}
-															onChange={handleEditFormChange}
-															placeholder="type"
-														/>
-														<span className="validation-text"></span>
-													</div>
-												</div>
-												<div className="form-group mb-3">
-													<label className="text-black font-w500">Posted Date</label>
-													<div className="contact-name">
-														<input type="text"  className="form-control"  autocomplete="off"
-															name="pdate" required="required"
-															value={editFormData.pdate}
-															onChange={handleEditFormChange}
-															placeholder="pdate"
-														/>
-														<span className="validation-text"></span>
-													</div>
-												</div>
-												<div className="form-group mb-3">
-													<label className="text-black font-w500">Last Date</label>
-													<div className="contact-name">
-														<input type="text"  className="form-control" autocomplete="off"
-															name="ldate" required="required"
-															value={editFormData.ldate}
-															onChange={handleEditFormChange}
-															placeholder="ldate"
-														/>
-														<span className="validation-text"></span>
-													</div>
-												</div>
-												<div className="form-group mb-3">
-													<label className="text-black font-w500">Close Date</label>
-													<div className="contact-name">
-														<input type="text"  className="form-control"  autocomplete="off"
-															name="cdate" required="required"
-															value={editFormData.cdate}
-															onChange={handleEditFormChange}
-															placeholder="cdate"
-														/>
-														<span className="validation-text"></span>
-													</div>
-												</div>											
-												<div className="form-group mb-3">
-													<label className="text-black font-w500">Status</label>
-													<div className="contact-name">
-														<input type="text"  className="form-control" autocomplete="off"
-															name="status" required="required"
-															value={editFormData.status}
-															onChange={handleEditFormChange}
-															placeholder="status"
-														/>
-														<span className="validation-text"></span>
-													</div>
-												</div>
-												
-												
-												
-																							  
-											</div>
-										</div>
-									</div>
-									<div className="modal-footer">
-										<button type="submit" className="btn btn-primary" onClick={handleEditFormSubmit}>Save</button>  
-										<button type="button" onClick={()=> setEditModal(false)} className="btn btn-danger"> <i className="flaticon-delete-1"></i> Discard</button>      
-									</div>
-								</form>
-								
-							</div>
-						</div>
-					</Modal>
-					<Link to={"#"} className="btn btn-secondary btn-sm me-3"> <i className="fas fa-envelope"></i></Link>
-					<Link to={"#"} className="btn btn-secondary btn-sm me-3"><i className="fas fa-phone-alt"></i></Link>
-					<Link to={"#"} className="btn btn-secondary btn-sm"><i className="fas fa-info"></i></Link>
-				</div>
-			</div>	
-			<div className="row">
-				<div className="col-xl-12">
-					<div className="table-responsive">
-						<table className="table display mb-4 dataTablesCard job-table table-responsive-xl card-table dataTable no-footer" >
-							<thead>
-								<tr>
-									<th>No</th>
-									<th>Position</th>
-									<th>Type</th>
-									<th>Posted Date</th>
-									<th>Last Date To Apply</th>
-									<th>Close Date</th>
-									<th>Status</th>
-									<th>Actions</th>
-								</tr>
-							</thead>
-							<tbody>
-								{contacts.map((contact,index)=>(
-									<tr key={index}>
-										<td>#12345</td>
-										<td>{contact.position}</td>
-										<td className="wspace-no">{contact.type}</td>
-										<td>{contact.pdate}</td>
-										<td>{contact.ldate}</td>
-										<td>{contact.cdate}</td>
-										<td><span className={`badge badge-lg light badge-${contact.status=== "Active" ? 'success' : 'danger'}`}>{contact.status}</span></td>
-										<td>
-											<div className="action-buttons d-flex justify-content-end">
-												<Link to={"#"} className="btn btn-success light mr-2">
-													<svg xmlns="http://www.w3.org/2000/svg" className="svg-main-icon" width="24px" height="24px" viewBox="0 0 32 32" x="0px" y="0px"><g data-name="Layer 21"><path d="M29,14.47A15,15,0,0,0,3,14.47a3.07,3.07,0,0,0,0,3.06,15,15,0,0,0,26,0A3.07,3.07,0,0,0,29,14.47ZM16,21a5,5,0,1,1,5-5A5,5,0,0,1,16,21Z" fill="#000000" fillRule="nonzero"></path><circle cx="16" cy="16" r="3" fill="#000000" fillRule="nonzero"></circle></g></svg>
-												</Link>
-												<Link to={"#"} className="btn btn-secondary light mr-2"
-													onClick={(event) => handleEditClick(event, contact)}
-												>
-													<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" className="svg-main-icon">
-														<g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-															<rect x="0" y="0" width="24" height="24"></rect>
-															<path d="M8,17.9148182 L8,5.96685884 C8,5.56391781 8.16211443,5.17792052 8.44982609,4.89581508 L10.965708,2.42895648 C11.5426798,1.86322723 12.4640974,1.85620921 13.0496196,2.41308426 L15.5337377,4.77566479 C15.8314604,5.0588212 16,5.45170806 16,5.86258077 L16,17.9148182 C16,18.7432453 15.3284271,19.4148182 14.5,19.4148182 L9.5,19.4148182 C8.67157288,19.4148182 8,18.7432453 8,17.9148182 Z" fill="#000000" fillRule="nonzero" transform="translate(12.000000, 10.707409) rotate(-135.000000) translate(-12.000000, -10.707409) "></path>
-															<rect fill="#000000" opacity="0.3" x="5" y="20" width="15" height="2" rx="1"></rect>
-														</g>
-													</svg>
-												</Link>
-												<Link to={"#"} className="btn btn-danger light"
-													onClick={()=>handleDeleteClick(contact.id)}
-												>
-													<svg xmlns="http://www.w3.org/2000/svg"  width="24px" height="24px" viewBox="0 0 24 24" version="1.1" className="svg-main-icon">
-														<g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-															<rect x="0" y="0" width="24" height="24"></rect>
-															<path d="M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z" fill="#000000" fillRule="nonzero"></path>
-															<path d="M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z" fill="#000000" opacity="0.3"></path>
-														</g>
-													</svg>
-												</Link>
-											</div>
-										</td>
-									</tr>
-								))}
-							</tbody>	
-						</table>
-					</div>		
-				</div>	
-				<div className="d-md-flex d-block align-items-center justify-content-between text-center  flex-wrap mt-md-0 mt-3">
-					<div className='mb-md-0 mb-2'>
-						<h5 className="mb-0">Showing 1 to 7 of 7 entries</h5>
-					</div>
-					<nav>
-						<ul className="pagination pagination-circle justify-content-center">
-							<li className="page-item page-indicator">
-								<Link to={"#"} className="page-link">
-									<i className='fa fa-angle-double-left' />
-								</Link>
-							</li>
-							<li className="page-item active"><Link to={"#"} className="page-link">1</Link>
-							</li>
-							<li className="page-item page-indicator">
-								<Link to={"#"} className="page-link">
-									<i className='fa fa-angle-double-right' />
-								</Link>
-							</li>
-						</ul>
-					</nav>
-				</div>				
-			</div>		
-		</>
-	)	
-}
+  };
+
+  return (
+    <div className="row">
+      <div className="col-xl-12">
+        <div className="card">
+          <div className="card-header pb-0 border-0 flex-wrap">
+            <h4 className="fs-20 mb-3">Create DOM Users</h4>
+          </div>
+          <div className="card-body">
+            {error && <div className="alert alert-danger mb-4">{error}</div>}
+            <form onSubmit={handleSubmit}>
+              <div className="row">
+                {/* Basic Information */}
+                <div className="col-xl-6 col-lg-6 col-md-6">
+                  <div className="card mb-3 border-0 shadow-sm">
+                    <div className="card-header">
+                      <h5 className="fs-16 mb-0">Basic Information</h5>
+                    </div>
+                    <div className="card-body">
+                      <div className="form-group">
+                        <label>ATTN</label>
+                        <input
+                          type="text"
+                          name="ATTN"
+                          value={userdata.ATTN}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Transferred From</label>
+                        <input
+                          type="text"
+                          name="transferedFrom"
+                          value={userdata.transferedFrom}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Transferred To</label>
+                        <input
+                          type="text"
+                          name="transferedTo"
+                          value={userdata.transferedTo}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Type</label>
+                        <input
+                          type="text"
+                          name="type"
+                          value={userdata.type}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Parent Company</label>
+                        <input
+                          type="text"
+                          name="parentCompany"
+                          value={userdata.parentCompany}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Company Display Name</label>
+                        <input
+                          type="text"
+                          name="companyDisplayName"
+                          value={userdata.companyDisplayName}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Company Name *</label>
+                        <input
+                          type="text"
+                          name="companyName"
+                          value={userdata.companyName}
+                          onChange={handleChange}
+                          required
+                          className="form-control"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Billing Information */}
+                <div className="col-xl-6 col-lg-6 col-md-6">
+                  <div className="card mb-3 border-0 shadow-sm">
+                    <div className="card-header">
+                      <h5 className="fs-16 mb-0">Billing Information</h5>
+                    </div>
+                    <div className="card-body">
+                      <div className="form-group">
+                        <label>Billing Company Name</label>
+                        <input
+                          type="text"
+                          name="billingCompanyName"
+                          value={userdata.billingCompanyName}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Billing Contact</label>
+                        <input
+                          type="text"
+                          name="billingContact"
+                          value={userdata.billingContact}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Billing Phone</label>
+                        <input
+                          type="text"
+                          name="billingPhone"
+                          value={userdata.billingPhone}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Billing Address</label>
+                        <input
+                          type="text"
+                          name="billingAddress"
+                          value={userdata.billingAddress}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Billing City</label>
+                        <input
+                          type="text"
+                          name="billingCity"
+                          value={userdata.billingCity}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Billing State</label>
+                        <input
+                          type="text"
+                          name="billingState"
+                          value={userdata.billingState}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Billing Zip Code</label>
+                        <input
+                          type="text"
+                          name="billingZipCode"
+                          value={userdata.billingZipCode}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ownership and Market */}
+                <div className="col-xl-6 col-lg-6 col-md-6">
+                  <div className="card mb-3 border-0 shadow-sm">
+                    <div className="card-header">
+                      <h5 className="fs-16 mb-0">Ownership and Market</h5>
+                    </div>
+                    <div className="card-body">
+                      <div className="form-group">
+                        <label>Ownership</label>
+                        <select
+                          name="ownership"
+                          value={userdata.ownership}
+                          onChange={handleChange}
+                          className="form-control"
+                        >
+                          <option value="own">Own</option>
+                          <option value="rent">Rent</option>
+                          <option value="rev">Rev</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label>Market</label>
+                        <select
+                          name="market"
+                          value={userdata.market}
+                          onChange={handleChange}
+                          className="form-control"
+                        >
+                          <option value="market facing">Market Facing</option>
+                          <option value="private">Private</option>
+                          <option value="member">Member</option>
+                          <option value="corporate">Corporate</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label>Industry</label>
+                        <input
+                          type="text"
+                          name="industry"
+                          value={userdata.industry}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Shipping Information */}
+                <div className="col-xl-6 col-lg-6 col-md-6">
+                  <div className="card mb-3 border-0 shadow-sm">
+                    <div className="card-header">
+                      <h5 className="fs-16 mb-0">Shipping Information</h5>
+                    </div>
+                    <div className="card-body">
+                      <div className="form-group">
+                        <label>Shipping Address</label>
+                        <input
+                          type="text"
+                          name="shippingAddress"
+                          value={userdata.shippingAddress}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Shipping Address 2</label>
+                        <input
+                          type="text"
+                          name="shippingAddress2"
+                          value={userdata.shippingAddress2}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Shipping City</label>
+                        <input
+                          type="text"
+                          name="shippingCity"
+                          value={userdata.shippingCity}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Shipping State</label>
+                        <input
+                          type="text"
+                          name="shippingState"
+                          value={userdata.shippingState}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Shipping Zip Code</label>
+                        <input
+                          type="text"
+                          name="shippingZipCode"
+                          value={userdata.shippingZipCode}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Shipping Country</label>
+                        <input
+                          type="text"
+                          name="shippingCountry"
+                          value={userdata.shippingCountry}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Longitude</label>
+                        <input
+                          type="text"
+                          name="longitude"
+                          value={userdata.longitude}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contacts */}
+                <div className="col-xl-6 col-lg-6 col-md-6">
+                  <div className="card mb-3 border-0 shadow-sm">
+                    <div className="card-header">
+                      <h5 className="fs-16 mb-0">Primary Contact</h5>
+                    </div>
+                    <div className="card-body">
+                      <div className="form-group">
+                        <label>First Name</label>
+                        <input
+                          type="text"
+                          name="primaryFirstName"
+                          value={userdata.primaryFirstName}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Last Name</label>
+                        <input
+                          type="text"
+                          name="primaryLastName"
+                          value={userdata.primaryLastName}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Title</label>
+                        <input
+                          type="text"
+                          name="primaryTitle"
+                          value={userdata.primaryTitle}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Email</label>
+                        <input
+                          type="email"
+                          name="primaryEmail"
+                          value={userdata.primaryEmail}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Phone</label>
+                        <input
+                          type="text"
+                          name="primaryPhone"
+                          value={userdata.primaryPhone}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-xl-6 col-lg-6 col-md-6">
+                  <div className="card mb-3 border-0 shadow-sm">
+                    <div className="card-header">
+                      <h5 className="fs-16 mb-0">Secondary Contact</h5>
+                    </div>
+                    <div className="card-body">
+                      <div className="form-group">
+                        <label>First Name</label>
+                        <input
+                          type="text"
+                          name="secondaryFirstName"
+                          value={userdata.secondaryFirstName}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Last Name</label>
+                        <input
+                          type="text"
+                          name="secondaryLastName"
+                          value={userdata.secondaryLastName}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Title</label>
+                        <input
+                          type="text"
+                          name="secondaryTitle"
+                          value={userdata.secondaryTitle}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Email</label>
+                        <input
+                          type="email"
+                          name="secondaryEmail"
+                          value={userdata.secondaryEmail}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Phone</label>
+                        <input
+                          type="text"
+                          name="secondaryPhone"
+                          value={userdata.secondaryPhone}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Other Contacts */}
+                <div className="col-xl-6 col-lg-6 col-md-6">
+                  <div className="card mb-3 border-0 shadow-sm">
+                    <div className="card-header">
+                      <h5 className="fs-16 mb-0">Other Contacts</h5>
+                    </div>
+                    <div className="card-body">
+                      <div className="form-group">
+                        <label>Other Point of Contact</label>
+                        <input
+                          type="text"
+                          name="otherPOC"
+                          value={userdata.otherPOC}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Broker</label>
+                        <input
+                          type="text"
+                          name="broker"
+                          value={userdata.broker}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* DOM Specific */}
+                <div className="col-xl-6 col-lg-6 col-md-6">
+                  <div className="card mb-3 border-0 shadow-sm">
+                    <div className="card-header">
+                      <h5 className="fs-16 mb-0">DOM Specific</h5>
+                    </div>
+                    <div className="card-body">
+                      <div className="form-group">
+                        <label>Dome ID</label>
+                        <input
+                          type="text"
+                          name="domeID"
+                          value={userdata.domeID}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Audio</label>
+                        <input
+                          type="text"
+                          name="audio"
+                          value={userdata.audio}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Hardware - Screen</label>
+                        <input
+                          type="text"
+                          name="hardwareScreen"
+                          value={userdata.hardwareScreen}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Board</label>
+                        <input
+                          type="text"
+                          name="board"
+                          value={userdata.board}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Extras</label>
+                        <input
+                          type="text"
+                          name="extras"
+                          value={userdata.extras}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Install Date</label>
+                        <input
+                          type="date"
+                          name="installDate"
+                          value={userdata.installDate}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Training and Notes */}
+                <div className="col-xl-6 col-lg-6 col-md-6">
+                  <div className="card mb-3 border-0 shadow-sm">
+                    <div className="card-header">
+                      <h5 className="fs-16 mb-0">Training and Notes</h5>
+                    </div>
+                    <div className="card-body">
+                      <div className="form-group">
+                        <label>Onboarding Training</label>
+                        <textarea
+                          name="onboardingTraining"
+                          value={userdata.onboardingTraining}
+                          onChange={handleChange}
+                          className="form-control"
+                          rows="3"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Account Overview</label>
+                        <textarea
+                          name="accountOverview"
+                          value={userdata.accountOverview}
+                          onChange={handleChange}
+                          className="form-control"
+                          rows="3"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Strategy and Account</label>
+                        <textarea
+                          name="strategyAndAccount"
+                          value={userdata.strategyAndAccount}
+                          onChange={handleChange}
+                          className="form-control"
+                          rows="3"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Technical Servicing Notes</label>
+                        <textarea
+                          name="technicalServicingNotes"
+                          value={userdata.technicalServicingNotes}
+                          onChange={handleChange}
+                          className="form-control"
+                          rows="3"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Online Presence */}
+                <div className="col-xl-6 col-lg-6 col-md-6">
+                  <div className="card mb-3 border-0 shadow-sm">
+                    <div className="card-header">
+                      <h5 className="fs-16 mb-0">Online Presence</h5>
+                    </div>
+                    <div className="card-body">
+                      <div className="form-group">
+                        <label>Website</label>
+                        <input
+                          type="text"
+                          name="website"
+                          value={userdata.website}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Instagram</label>
+                        <input
+                          type="text"
+                          name="instagram"
+                          value={userdata.instagram}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Instagram Following</label>
+                        <input
+                          type="text"
+                          name="instaFollowing"
+                          value={userdata.instaFollowing}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>TikTok</label>
+                        <input
+                          type="text"
+                          name="tikTok"
+                          value={userdata.tikTok}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Other Social</label>
+                        <input
+                          type="text"
+                          name="otherSocial"
+                          value={userdata.otherSocial}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-check">
+                        <input
+                          type="checkbox"
+                          name="check"
+                          checked={userdata.check}
+                          onChange={handleChange}
+                          className="form-check-input"
+                        />
+                        <label className="form-check-label">Check</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Submit Button */}
+                <div className="col-xl-12">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="btn btn-primary btn-block"
+                  >
+                    {loading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2"></span>
+                        Registering...
+                      </>
+                    ) : (
+                      "Register"
+                    )}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default JobLists;

@@ -76,15 +76,15 @@ export const addCompany = async (req, res) => {
       return res.status(400).json({ message: "Required all the details" });
     }
 
-    // const response = axios.post(
-    //   "https://api.hubapi.com/crm/v3/objects/companies",
-    //   companyDetails,
-    //   {
-    //     headers: {
-    //       Authorization: `Bearer ${process.env.token}`,
-    //     },
-    //   }
-    // );
+    const response = axios.post(
+      "https://api.hubapi.com/crm/v3/objects/companies",
+      companyDetails,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.token}`,
+        },
+      }
+    );
     console.log(companyDetails);
   } catch (error) {
     console.log(error);
