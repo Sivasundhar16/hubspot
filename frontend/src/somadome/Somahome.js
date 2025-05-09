@@ -137,21 +137,6 @@ const Hubspot = () => {
       </div>
 
       <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-        {/* <button
-          onClick={loadPreviousPage}
-          disabled={currentPage <= 1 || isLoadingMore}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: currentPage <= 1 ? "#ccc" : "dodgerblue",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: currentPage <= 1 ? "not-allowed" : "pointer",
-          }}
-        >
-          Previous Page
-        </button> */}
-
         <button
           onClick={loadNextPage}
           disabled={!paging?.next || isLoadingMore}
@@ -172,3 +157,4 @@ const Hubspot = () => {
 };
 
 export default Hubspot;
+//nav la irukura header la heading part iruku.
