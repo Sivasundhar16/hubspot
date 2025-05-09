@@ -77,7 +77,7 @@ export const addCompany = async (req, res) => {
       transferedTo,
       type,
       companyName,
-      parentCompany,
+      parentCompany, // We'll keep this in the request but not send to HubSpot
       companyDisplayName,
 
       // Billing Information
@@ -85,6 +85,7 @@ export const addCompany = async (req, res) => {
       billingContact,
       billingPhone,
       billingAddress,
+      billingAddress2,
       billingCity,
       billingState,
       billingZipCode,
@@ -101,6 +102,8 @@ export const addCompany = async (req, res) => {
       shippingState,
       shippingZipCode,
       shippingCountry,
+      countryRegionCode,
+      latitude,
       longitude,
 
       // Primary Contact
@@ -140,10 +143,12 @@ export const addCompany = async (req, res) => {
       instagram,
       instaFollowing,
       tikTok,
+      facebookPage,
       otherSocial,
       check,
     } = req.body;
-    console.log(parentCompany, companyDisplayName);
+    // console.log(parentCompany, companyDisplayName);
+    console.log("This is Parent company name", parentCompany);
 
     if (!companyName) {
       return res.status(400).json({ message: "Company name is required" });
@@ -166,6 +171,12 @@ export const addCompany = async (req, res) => {
       domain = `${companyName.toLowerCase().replace(/\s+/g, "")}.com`;
     }
 
+    // Fix case sensitivity for ownership value
+    let formattedOwnership = ownership;
+    if (ownership && ownership.toLowerCase() === "rev-share") {
+      formattedOwnership = "Rev-Share"; // Ensure correct capitalization
+    }
+
     const hubspotData = {
       properties: {
         // Basic Information
@@ -176,20 +187,20 @@ export const addCompany = async (req, res) => {
         transferred__to: transferedTo,
         type: type === "Dome Home" ? "PARTNER" : type,
         dome_home: type === "Dome Home" ? "true" : "false",
+        // Removed hs_parent_company_id as it's read-only
 
         // Billing Information
         billing_company_name: billingCompanyName,
         billing_contact_individual_name: billingContact,
         billing_phone: billingPhone,
         billing_address_1: billingAddress,
+        billing_address_line_2: billingAddress2,
         billing_city: billingCity,
         billing_state: billingState,
         billing_zip_code: billingZipCode,
 
         // Ownership and Market
-        ownership:
-          ownership?.charAt(0).toUpperCase() +
-          ownership?.slice(1).toLowerCase(),
+        ownership: formattedOwnership, // Using the corrected case-sensitive value
         market_class: market?.charAt(0).toUpperCase() + market?.slice(1),
         industry: industry,
 
@@ -200,7 +211,9 @@ export const addCompany = async (req, res) => {
         state: shippingState,
         zip: shippingZipCode,
         country: shippingCountry,
-        // location_longitude: longitude, // Only include if this property exists
+        hs_country_code: countryRegionCode,
+        location__latitude_: latitude,
+        location__longitude_: longitude,
 
         // Primary Contact
         first_name: primaryFirstName,
@@ -209,11 +222,12 @@ export const addCompany = async (req, res) => {
         email: primaryEmail,
         primary_phone: primaryPhone,
 
-        // Secondary Contact - using standard HubSpot properties
-        hs_secondary_contact_firstname: secondaryFirstName,
-        hs_secondary_contact_lastname: secondaryLastName,
-        hs_secondary_contact_email: secondaryEmail,
-        hs_secondary_contact_phone: secondaryPhone,
+        // Secondary Contact
+        secondary_first_neme: secondaryFirstName,
+        secondary_last_name: secondaryLastName,
+        secondary_title: secondaryTitle,
+        secondary_email: secondaryEmail,
+        secondary_phone: secondaryPhone,
 
         // Other Contacts
         other_poc: otherPOC,
@@ -241,6 +255,7 @@ export const addCompany = async (req, res) => {
         instagram_page: instagram,
         insta_following: instaFollowing,
         tik_tok: tikTok,
+        facebook_company_page: facebookPage,
         other_social: otherSocial,
         check_in: check ? "true" : "false",
 
@@ -248,6 +263,12 @@ export const addCompany = async (req, res) => {
         domain: domain,
       },
     };
+
+    console.log(
+      "Sending data to HubSpot:",
+      JSON.stringify(hubspotData, null, 2)
+    );
+
     const response = await axios.post(
       "https://api.hubapi.com/crm/v3/objects/companies",
       hubspotData,
@@ -261,9 +282,18 @@ export const addCompany = async (req, res) => {
     console.log(response);
 
     console.log("Company created successfully:", response.data);
+
+    // If parent company was provided, log it for reference but don't try to set it directly
+    if (parentCompany) {
+      console.log(
+        `Note: Parent company "${parentCompany}" was provided but not set as it's a read-only property in HubSpot`
+      );
+    }
+
     return res.status(201).json({
       message: "Company created successfully",
       data: response.data,
+      redirectUrl: "/react/demo",
     });
   } catch (error) {
     console.error(

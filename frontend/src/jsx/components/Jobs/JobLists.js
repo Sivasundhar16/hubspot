@@ -1,16 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const JobLists = () => {
-  const navigate = useNavigate();
   const [userdata, setUserData] = useState({
     // Basic Information
     ATTN: "",
     transferedFrom: "",
     transferedTo: "",
     type: "",
-    parentCompany: "",
+    parentCompany: "", // We'll keep this field but note it's for reference only
     companyDisplayName: "",
     companyName: "",
 
@@ -19,6 +17,7 @@ const JobLists = () => {
     billingContact: "",
     billingPhone: "",
     billingAddress: "",
+    billingAddress2: "",
     billingCity: "",
     billingState: "",
     billingZipCode: "",
@@ -35,6 +34,8 @@ const JobLists = () => {
     shippingState: "",
     shippingZipCode: "",
     shippingCountry: "",
+    countryRegionCode: "",
+    latitude: "",
     longitude: "",
 
     // Primary Contact
@@ -72,8 +73,9 @@ const JobLists = () => {
     // Online Presence
     website: "",
     instagram: "",
-    instaFollowing: "Following",
+    instaFollowing: "Both Follow",
     tikTok: "",
+    facebookPage: "",
     otherSocial: "",
     check: false,
   });
@@ -114,6 +116,7 @@ const JobLists = () => {
           billingContact: "",
           billingPhone: "",
           billingAddress: "",
+          billingAddress2: "",
           billingCity: "",
           billingState: "",
           billingZipCode: "",
@@ -126,6 +129,8 @@ const JobLists = () => {
           shippingState: "",
           shippingZipCode: "",
           shippingCountry: "",
+          countryRegionCode: "",
+          latitude: "",
           longitude: "",
           primaryFirstName: "",
           primaryLastName: "",
@@ -151,12 +156,15 @@ const JobLists = () => {
           technicalServicingNotes: "",
           website: "",
           instagram: "",
-          instaFollowing: "Following",
+          instaFollowing: "Both Follow",
           tikTok: "",
+          facebookPage: "",
           otherSocial: "",
           check: false,
         });
-        navigate("/domhost");
+
+        // Use window.location.href for redirect
+        window.location.href = "http://localhost:3000/react/demo";
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -232,14 +240,20 @@ const JobLists = () => {
                         </select>
                       </div>
                       <div className="form-group">
-                        <label>Parent Company</label>
+                        <label>Parent Company (Reference Only)</label>
                         <input
                           type="text"
                           name="parentCompany"
                           value={userdata.parentCompany}
                           onChange={handleChange}
+                          disabled
                           className="form-control"
+                          placeholder="For reference only - cannot be set via API"
                         />
+                        <small className="text-muted">
+                          Note: Parent company relationships must be set
+                          manually in HubSpot
+                        </small>
                       </div>
                       <div className="form-group">
                         <label>Company Display Name</label>
@@ -314,6 +328,16 @@ const JobLists = () => {
                         />
                       </div>
                       <div className="form-group">
+                        <label>Billing Address Line 2</label>
+                        <input
+                          type="text"
+                          name="billingAddress2"
+                          value={userdata.billingAddress2}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
                         <label>Billing City</label>
                         <input
                           type="text"
@@ -364,7 +388,8 @@ const JobLists = () => {
                         >
                           <option value="Own">Own</option>
                           <option value="Rent">Rent</option>
-                          <option value="Rev-Share">Rev-Share</option>
+                          <option value="Rev-Share">Rev-Share</option>{" "}
+                          {/* Fixed capitalization */}
                         </select>
                       </div>
                       <div className="form-group">
@@ -469,6 +494,28 @@ const JobLists = () => {
                         />
                       </div>
                       <div className="form-group">
+                        <label>Country Code</label>
+                        <input
+                          type="text"
+                          name="countryRegionCode"
+                          value={userdata.countryRegionCode}
+                          onChange={handleChange}
+                          className="form-control"
+                          placeholder="e.g. US, UK, IN"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Latitude</label>
+                        <input
+                          type="text"
+                          name="latitude"
+                          value={userdata.latitude}
+                          onChange={handleChange}
+                          className="form-control"
+                          placeholder="e.g. 40.7128"
+                        />
+                      </div>
+                      <div className="form-group">
                         <label>Longitude</label>
                         <input
                           type="text"
@@ -476,12 +523,14 @@ const JobLists = () => {
                           value={userdata.longitude}
                           onChange={handleChange}
                           className="form-control"
+                          placeholder="e.g. -74.0060"
                         />
                       </div>
                     </div>
                   </div>
                 </div>
 
+                {/* Rest of the form remains the same */}
                 {/* Contacts */}
                 <div className="col-xl-6 col-lg-6 col-md-6">
                   <div className="card mb-3 border-0 shadow-sm">
@@ -817,11 +866,14 @@ const JobLists = () => {
                           onChange={handleChange}
                           className="form-control"
                         >
-                          <option value="Yes">Yes</option>
-                          <option value="N/A">N/A</option>
-                          <option value="Request Sent">Request Sent</option>
-                          <option value="Following">Following</option>
                           <option value="Both Follow">Both Follow</option>
+                          <option value="Send Request">Send Request</option>
+                          <option value="N/A">N/A</option>
+                          <option value="Following, Request Sent">
+                            Following, Request Sent
+                          </option>
+                          <option value="Yes">Yes</option>
+                          <option value="Request Sent">Request Sent</option>
                         </select>
                       </div>
                       <div className="form-group">
@@ -830,6 +882,16 @@ const JobLists = () => {
                           type="text"
                           name="tikTok"
                           value={userdata.tikTok}
+                          onChange={handleChange}
+                          className="form-control"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Facebook Company Page</label>
+                        <input
+                          type="text"
+                          name="facebookPage"
+                          value={userdata.facebookPage}
                           onChange={handleChange}
                           className="form-control"
                         />
