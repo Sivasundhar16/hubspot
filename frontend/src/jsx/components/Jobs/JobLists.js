@@ -24,9 +24,9 @@ const JobLists = () => {
     billingZipCode: "",
 
     // Ownership and Market
-    ownership: "own",
-    market: "market facing",
-    industry: "",
+    ownership: "Own",
+    market: "Market Facing",
+    industry: "COMPUTER_SOFTWARE",
 
     // Shipping Information
     shippingAddress: "",
@@ -57,14 +57,14 @@ const JobLists = () => {
 
     // DOM Specific
     domeID: "",
-    audio: "",
-    hardwareScreen: "",
-    board: "",
+    audio: "true",
+    hardwareScreen: "V3 - Android (Tian)",
+    board: "V2 - Tian (Mikroe and Android Firmware)",
     extras: "",
     installDate: "",
 
     // Training and Notes
-    onboardingTraining: "",
+    onboardingTraining: "true",
     accountOverview: "",
     strategyAndAccount: "",
     technicalServicingNotes: "",
@@ -72,7 +72,7 @@ const JobLists = () => {
     // Online Presence
     website: "",
     instagram: "",
-    instaFollowing: "",
+    instaFollowing: "Following",
     tikTok: "",
     otherSocial: "",
     check: false,
@@ -117,9 +117,9 @@ const JobLists = () => {
           billingCity: "",
           billingState: "",
           billingZipCode: "",
-          ownership: "own",
-          market: "market facing",
-          industry: "",
+          ownership: "Own",
+          market: "Market Facing",
+          industry: "COMPUTER_SOFTWARE",
           shippingAddress: "",
           shippingAddress2: "",
           shippingCity: "",
@@ -140,18 +140,18 @@ const JobLists = () => {
           otherPOC: "",
           broker: "",
           domeID: "",
-          audio: "",
-          hardwareScreen: "",
-          board: "",
+          audio: "true",
+          hardwareScreen: "V3 - Android (Tian)",
+          board: "V2 - Tian (Mikroe and Android Firmware)",
           extras: "",
           installDate: "",
-          onboardingTraining: "",
+          onboardingTraining: "true",
           accountOverview: "",
           strategyAndAccount: "",
           technicalServicingNotes: "",
           website: "",
           instagram: "",
-          instaFollowing: "",
+          instaFollowing: "Following",
           tikTok: "",
           otherSocial: "",
           check: false,
@@ -219,13 +219,17 @@ const JobLists = () => {
                       </div>
                       <div className="form-group">
                         <label>Type</label>
-                        <input
-                          type="text"
+                        <select
                           name="type"
                           value={userdata.type}
                           onChange={handleChange}
                           className="form-control"
-                        />
+                        >
+                          <option value="">Select Type</option>
+                          <option value="Coming Soon">Coming Soon</option>
+                          <option value="Dome Home">Dome Home</option>
+                          <option value="Archive">Archive</option>
+                        </select>
                       </div>
                       <div className="form-group">
                         <label>Parent Company</label>
@@ -358,9 +362,9 @@ const JobLists = () => {
                           onChange={handleChange}
                           className="form-control"
                         >
-                          <option value="own">Own</option>
-                          <option value="rent">Rent</option>
-                          <option value="rev">Rev</option>
+                          <option value="Own">Own</option>
+                          <option value="Rent">Rent</option>
+                          <option value="Rev-Share">Rev-Share</option>
                         </select>
                       </div>
                       <div className="form-group">
@@ -371,21 +375,27 @@ const JobLists = () => {
                           onChange={handleChange}
                           className="form-control"
                         >
-                          <option value="market facing">Market Facing</option>
-                          <option value="private">Private</option>
-                          <option value="member">Member</option>
-                          <option value="corporate">Corporate</option>
+                          <option value="Market Facing">Market Facing</option>
+                          <option value="Member">Member</option>
+                          <option value="Private">Private</option>
+                          <option value="Corporate">Corporate</option>
                         </select>
                       </div>
                       <div className="form-group">
                         <label>Industry</label>
-                        <input
-                          type="text"
+                        <select
                           name="industry"
                           value={userdata.industry}
                           onChange={handleChange}
                           className="form-control"
-                        />
+                        >
+                          <option value="COMPUTER_SOFTWARE">
+                            Computer Software
+                          </option>
+                          <option value="INFORMATION_TECHNOLOGY_AND_SERVICES">
+                            IT and Services
+                          </option>
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -643,33 +653,57 @@ const JobLists = () => {
                       </div>
                       <div className="form-group">
                         <label>Audio</label>
-                        <input
-                          type="text"
+                        <select
                           name="audio"
                           value={userdata.audio}
                           onChange={handleChange}
                           className="form-control"
-                        />
+                        >
+                          <option value="true">Yes</option>
+                          <option value="false">No</option>
+                        </select>
                       </div>
                       <div className="form-group">
                         <label>Hardware - Screen</label>
-                        <input
-                          type="text"
+                        <select
                           name="hardwareScreen"
                           value={userdata.hardwareScreen}
                           onChange={handleChange}
                           className="form-control"
-                        />
+                        >
+                          <option value="V0 - Legacy">V0 - Legacy</option>
+                          <option value="V1 - Mikroe (Tian or Cooper Board)">
+                            V1 - Mikroe
+                          </option>
+                          <option value="V2 - Old Android (Cooper)">
+                            V2 - Old Android
+                          </option>
+                          <option value="V3 - Android (Tian)">
+                            V3 - Android
+                          </option>
+                        </select>
                       </div>
                       <div className="form-group">
                         <label>Board</label>
-                        <input
-                          type="text"
+                        <select
                           name="board"
                           value={userdata.board}
                           onChange={handleChange}
                           className="form-control"
-                        />
+                        >
+                          <option value="V0 - Legacy (Prior to Cooper)">
+                            V0 - Legacy
+                          </option>
+                          <option value="V1 - Cooper (Mikroe and Old Android Firmware)">
+                            V1 - Cooper
+                          </option>
+                          <option value="V2 - Tian (Mikroe and Android Firmware)">
+                            V2 - Tian
+                          </option>
+                          <option value="V3 - Matthew (Android Firmware)">
+                            V3 - Matthew
+                          </option>
+                        </select>
                       </div>
                       <div className="form-group">
                         <label>Extras</label>
@@ -704,13 +738,15 @@ const JobLists = () => {
                     <div className="card-body">
                       <div className="form-group">
                         <label>Onboarding Training</label>
-                        <textarea
+                        <select
                           name="onboardingTraining"
                           value={userdata.onboardingTraining}
                           onChange={handleChange}
                           className="form-control"
-                          rows="3"
-                        />
+                        >
+                          <option value="true">Yes</option>
+                          <option value="false">No</option>
+                        </select>
                       </div>
                       <div className="form-group">
                         <label>Account Overview</label>
@@ -775,13 +811,18 @@ const JobLists = () => {
                       </div>
                       <div className="form-group">
                         <label>Instagram Following</label>
-                        <input
-                          type="text"
+                        <select
                           name="instaFollowing"
                           value={userdata.instaFollowing}
                           onChange={handleChange}
                           className="form-control"
-                        />
+                        >
+                          <option value="Yes">Yes</option>
+                          <option value="N/A">N/A</option>
+                          <option value="Request Sent">Request Sent</option>
+                          <option value="Following">Following</option>
+                          <option value="Both Follow">Both Follow</option>
+                        </select>
                       </div>
                       <div className="form-group">
                         <label>TikTok</label>
