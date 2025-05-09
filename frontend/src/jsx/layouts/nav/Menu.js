@@ -21,4 +21,15 @@ export const MenuList = [
       },
     ],
   },
+  {
+    title: "Tabel",
+    classsChange: "mm-collapse",
+    iconStyle: <i className="flaticon-025-dashboard"></i>,
+    content: [
+      {
+        title: "Table view",
+        to: "dashboard/table",
+      },
+    ],
+  },
 ];

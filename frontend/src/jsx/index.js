@@ -13,7 +13,7 @@ import Nav from "./layouts/nav";
 import Footer from "./layouts/Footer";
 import ScrollToTop from "./pages/ScrollToTop";
 /// Dashboard
-import Home from "./components/Dashboard/Home";
+// import Home from "./components/Dashboard/Home";
 // import DashboardDark from "./components/Dashboard/DashboardDark";
 // import Jobs from "./components/Dashboard/Jobs";
 // import Applications from "./components/Dashboard/Applications";
@@ -23,7 +23,6 @@ import Home from "./components/Dashboard/Home";
 // import Task from "./components/Dashboard/Task";
 
 //Jobs
-import JobLists from "./components/Jobs/JobLists";
 // import JobView from "./components/Jobs/JobView";
 // import JobApplication from "./components/Jobs/JobApplication";
 // import ApplyJob from "./components/Jobs/ApplyJob";
@@ -119,15 +118,19 @@ import Error500 from "./pages/Error500";
 import Error503 from "./pages/Error503";
 import Setting from "./layouts/Setting";
 import { ThemeContext } from "../context/ThemeContext";
-import Singlecompany from "./components/Dashboard/singleCompany";
+import Singlecompany from "../somadome/singleCompany";
+import Dashboardview from "../somadome/Dashboard_view";
+import Hubspot from "../somadome/Somahome";
+import JobLists from "../somadome/JobLists";
 
 const Markup = () => {
   const allroutes = [
     //own
-    { url: "job-list", component: <Home /> },
-    { url: "", component: <Home /> },
+    { url: "job-list", component: <Hubspot /> },
+    { url: "", component: <Hubspot /> },
     { url: "dashboard", component: <JobLists /> },
     { url: "dashboard/:id", component: <Singlecompany /> },
+    { url: "dashboard/table", component: <Dashboardview /> },
   ];
 
   return (

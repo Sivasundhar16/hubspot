@@ -4,7 +4,7 @@ import {
   getallCompany,
   getCompanybyId,
   nextPage,
-} from "../controller/user.controller.js";
+} from "../controller/company.controller.js";
 
 const router = express.Router();
 

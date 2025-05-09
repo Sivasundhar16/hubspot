@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ThemeContext } from "../../../context/ThemeContext";
+import { ThemeContext } from "../context/ThemeContext";
 
 const CompanyDetails = () => {
   const { background } = useContext(ThemeContext);
