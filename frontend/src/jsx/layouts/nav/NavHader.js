@@ -21,8 +21,8 @@ const NavHader = () => {
     <div className="nav-header">
       <Link to="/dashboard" className="brand-logo">
         <img
-          src={process.env.PUBLIC_URL + "/logo.webp"}
-          style={{ height: "auto", width: "150px" }}
+          src={process.env.PUBLIC_URL + "/logo_black.png"}
+          style={{ height: "auto", width: "180px" }}
           alt="img"
         />
       </Link>

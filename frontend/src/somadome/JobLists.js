@@ -164,7 +164,7 @@ const JobLists = () => {
         });
 
         // Use window.location.href for redirect
-        window.location.href = "http://localhost:3000/react/demo";
+        window.location.href = "http://localhost:3000/admin";
       }
     } catch (error) {
       console.error("Registration error:", error);

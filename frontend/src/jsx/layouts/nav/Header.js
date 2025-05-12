@@ -1,5 +1,8 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "../../../context/ThemeContext";
+import { Collapse, Dropdown } from "react-bootstrap";
+import LogoutPage from "./Logout";
+
 
 const Header = () => {
   const { background, changeBackground } = useContext(ThemeContext);
@@ -47,7 +50,32 @@ const Header = () => {
                     }}
                   ></i>
                 </button>
+
               </li>
+                                      <Dropdown as="div" className=" header-profile2 dropdown">
+          <Dropdown.Toggle
+            as="div"
+            variant=""
+            className=" i-false c-pointer"
+            // href="#"
+            role="button"
+            data-toggle="dropdown"
+          >
+            <div className="header-info2 d-flex align-items-center">
+              {/* <img src={profile} width={20} alt="" /> */}
+              <div className="ms-4 d-flex align-items-center sidebar-info justify-content-center">
+                <i className="fas fa-chevron-down"></i>
+              </div>
+            </div>
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu
+            align="end"
+            className=" dropdown-menu dropdown-menu-end"
+          >
+            <LogoutPage />
+          </Dropdown.Menu>
+        </Dropdown>
             </ul>
           </div>
         </nav>

@@ -1,12 +1,12 @@
 export const MenuList = [
   {
-    title: "DOM Users",
+    title: "DOME",
     classChange: "mm-collapse",
     iconStyle: <i className="flaticon-093-waving" />,
     content: [
       {
         title: "Company",
-        to: "job-list",
+        to: "company-list",
       },
     ],
   },
@@ -22,12 +22,12 @@ export const MenuList = [
     ],
   },
   {
-    title: "Tabel",
+    title: "mailing",
     classsChange: "mm-collapse",
     iconStyle: <i className="flaticon-025-dashboard"></i>,
     content: [
       {
-        title: "Table view",
+        title: "Companies",
         to: "dashboard/table",
       },
     ],

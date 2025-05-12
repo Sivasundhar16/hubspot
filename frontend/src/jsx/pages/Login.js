@@ -5,11 +5,11 @@ import { loadingToggleAction,loginAction,
 } from '../../store/actions/AuthActions';
 
 // image
-import logo from "../../images/logo-full.png";
-import loginbg from "../../images/pic1.png";
+import logo from "../../images/logo_black.png";
+import loginbg from "../../images/somadome-spaceship.webp";
 
 function Login (props) {
-  const [email, setEmail] = useState('demo@example.com');
+  const [email, setEmail] = useState('admin@gmail.com');
     let errorsObj = { email: '', password: '' };
     const [errors, setErrors] = useState(errorsObj);
     const [password, setPassword] = useState('123456');
@@ -39,12 +39,12 @@ function Login (props) {
   return (
 		<div className="authincation d-flex flex-column flex-lg-row flex-column-fluid">
 			<div className="login-aside text-center  d-flex flex-column flex-row-auto">
-				<div className="d-flex flex-column-auto flex-column pt-lg-40 pt-15">
+				<div className="d-flex flex-column-auto flex-column">
 					<div className="text-center mb-4 pt-5">
-						<img src={logo} alt="" />
+						<img src={logo} alt="" style={{width:"200px"}}/>
 					</div>
-					<h3 className="mb-2">Welcome back!</h3>
-					<p>User Experience & Interface Design <br />Strategy SaaS Solutions</p>
+					<h3 className="mb-2">Welcome to your Dome Control Hub!</h3>
+					<p>Take charge of your dome ecosystem with precision and clarity.</p>
 				</div>
 				<div className="aside-image" style={{backgroundImage:"url(" + loginbg + ")"}}></div>
 			</div>

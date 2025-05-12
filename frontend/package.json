@@ -18,6 +18,7 @@
     "axios": "^1.2.0",
     "formik": "^2.2.9",
     "framer-motion": "^8.0.2",
+    "jobick": "file:",
     "lightgallery": "^2.7.0",
     "lucide-react": "^0.509.0",
     "nouislider": "^14.7.0",

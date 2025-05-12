@@ -293,7 +293,7 @@ export const addCompany = async (req, res) => {
     return res.status(201).json({
       message: "Company created successfully",
       data: response.data,
-      redirectUrl: "/react/demo",
+      redirectUrl: "/admin",
     });
   } catch (error) {
     console.error(

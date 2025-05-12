@@ -126,7 +126,7 @@ import JobLists from "../somadome/JobLists";
 const Markup = () => {
   const allroutes = [
     //own
-    { url: "job-list", component: <Hubspot /> },
+    { url: "company-list", component: <Hubspot /> },
     { url: "", component: <Hubspot /> },
     { url: "dashboard", component: <JobLists /> },
     { url: "dashboard/:id", component: <Singlecompany /> },
